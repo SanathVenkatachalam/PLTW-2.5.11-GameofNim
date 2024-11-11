@@ -4,140 +4,120 @@
  * A Board class the PhraseSolverGame
  */
 import java.util.Scanner;
-import java.io.File;
+import java.util.Random;
+
 
 public class  Board
 {
-  private String solvedPhrase;
-  private String phrase;
-  private int currentLetterValue; 
-
-  /* your code here - constructor(s) */ 
-  public Board(){
-    solvedPhrase = "";
-    phrase = loadPhrase();
-    currentLetterValue = Board.setLetterValue();
-    System.out.println("Phrase: " + phrase); 
-
-  }
-  
-  /* your code here - accessor(s) */
-  /*gets the phrase
-  returns the phrase*/
-  public String getPhrase(){
-    return phrase;
-  }
-  //gets partially solved phrase(returns it)
-  public String getPartiallySolvedPhrase(){
-    return solvedPhrase;
-  }
-  //gets the value of the letter(returns it)
-  public int getLetterValue(){
-    return currentLetterValue;
-  }
-  
-  
-  /* your code here - mutator(s)  */
-
-
-  /* ---------- provided code, do not modify ---------- */
-  public void setLetterValue()
-  {
-    int randomInt = (int) ((Math.random() * 10) + 1) * 100;    
-    currentLetterValue = randomInt;
-  }
-
-  public boolean isSolved(String guess)
-  {
-    if (phrase.equals(guess))
-    {
-      return true;
+    public int numRocks;
+    boolean isPlaying;
+    Player winner;
+    Player loser;
+    public int numPlayers;
+    private int maxPlayers = 2;
+    int maxRockscanbepicked;
+    Random rand = new Random();
+    Player currentPlayer;
+    Player nextPlayer;
+    public Board(){
+        isPlaying = true;
     }
-    return false;
-  }
 
-  private String loadPhrase()
-  {
-    String tempPhrase = "";
-    
-    int numOfLines = 0;
-    try 
-    {
-      Scanner sc = new Scanner(new File("phrases.txt"));
-      while (sc.hasNextLine())
-      {
-        tempPhrase = sc.nextLine().trim();
-        numOfLines++;
-      }
-    } catch(Exception e) { System.out.println("Error reading or parsing phrases.txt"); }
-    
-		int randomInt = (int) ((Math.random() * numOfLines) + 1);
-    
-    try 
-    {
-      int count = 0;
-      Scanner sc = new Scanner(new File("phrases.txt"));
-      while (sc.hasNextLine())
-      {
-        count++;
-        String temp = sc.nextLine().trim();
-        if (count == randomInt)
-        {
-          tempPhrase = temp;
+    public void populate(){
+        System.out.println("There are " + numRocks + " available");
+        System.out.println("You can pick up at max " + maxRockscanbepicked + " rocks at the first turn");
+
+
+    }
+
+    public int getNumrocks(){
+        return numRocks;
+    }
+    public void setNumrocks(){
+        numRocks = (int)(Math.random()*(50-10) + 10);
+        maxRockscanbepicked = numRocks/2;
+
+    }
+    public void setRocks(int rocks){
+        numRocks = rocks;
+        maxRockscanbepicked = numRocks/2;
+    }
+    public void addPlayer(){
+        numPlayers+=1;
+        if (numPlayers> 2){
+            System.out.println("Lobby Full!");
         }
-      }
-    } catch (Exception e) { System.out.println("Error reading or parsing phrases.txt"); }
-    
-    for (int i = 0; i < tempPhrase.length(); i++)
-    {
-      if (tempPhrase.substring(i, i + 1).equals(" "))
-      {
-        solvedPhrase += "  ";
-      }  
-      else
-      {
-        solvedPhrase += "_ ";
-      }
-    }  
-    
-    return tempPhrase;
-  }  
-
-/* Checks if the guessed letter is in the phrase
-*   Pre condition:
-*      if the letter was not aldready found
-*    Post condition:
-*      guessed letter is added to a new string
-*      rest are added with spaces.
-*       This method returns immediately whether or not the guessed letter is there or not
-*      @param guess A string of characters that encompasses the character's guess
-*/
-//defines guessLetter method
-  public boolean guessLetter(String guess)
-  {
-    /*initializes a boolean variable to check if the letter is in the phrase and 
-    defines a String that concatinates all the correct letters.*/
-    boolean foundLetter = false;
-    String newSolvedPhrase = "";
-    //loop through the phrase to find the letter
-    for (int i = 0; i < phrase.length(); i++)
-    {
-      //if the letter(substring) in the phrase is equal to the guess
-      if (phrase.substring(i, i + 1).equals(guess))
-      {
-        //add it to the solved phrase string
-        newSolvedPhrase += guess + " ";\
-        //change the boolean variable
-        foundLetter = true;
-      }
-      //if the letter is not found
-      else
-      {
-        //copy the space and underscore to the solved Phrase statement.
-        newSolvedPhrase += solvedPhrase.substring(i * 2, i * 2 + 1) + " ";  
-      }
     }
-    solvedPhrase = newSolvedPhrase;
-    return foundLetter;
-  } 
-} 
+
+    public int getNumplayers(){
+        return numPlayers;
+    }
+
+    public void pickupRocks(int rock){
+        if (rock > maxRockscanbepicked){
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Too many rocks!");
+            System.out.print(getCurrentPlayer().getName()+ " How many rocks do you want to pick?:");
+            int rockNum = scanner.nextInt();
+            pickupRocks(rockNum);
+
+        }
+        else{
+            numRocks-=rock;
+            maxRockscanbepicked = numRocks/2;
+            if(numRocks == 1){
+                maxRockscanbepicked = 1;
+            }
+
+        }
+    }
+    public int countEligibleRocks(){
+        return maxRockscanbepicked;
+    }
+    public void setWinner(Player player){
+        winner = player;
+    }
+
+    public void setLoser(Player player){
+        loser = player;
+    }
+    public void closeBoard(){
+        System.out.println("Game Over");
+        isPlaying = false;
+    }
+
+
+    public void setCurrentPlayer(Player p){
+        currentPlayer = p;
+
+    }
+    public void setCurrentPlayer(){
+        Player tempPlayer = getNextPlayer();
+        nextPlayer = currentPlayer;
+        currentPlayer = tempPlayer;
+
+    }
+
+    public Player getCurrentPlayer(){
+        return currentPlayer;
+    }
+
+
+    public void setNextPlayer(Player p){
+        nextPlayer = p;
+
+    }
+    public Player getNextPlayer(){
+        return nextPlayer;
+    }
+
+    public String getWinner(){
+        return winner.getName();
+    }
+    public String getLoser(){
+        return loser.getName();
+    }
+
+
+
+}
