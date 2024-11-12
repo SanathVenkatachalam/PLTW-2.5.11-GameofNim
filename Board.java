@@ -3,121 +3,154 @@
  *
  * A Board class the PhraseSolverGame
  */
+
 import java.util.Scanner;
-import java.util.Random;
 
 
-public class  Board
-{
+public class Board {
+    /*attributes include: 
+    numRocks( number of rocks to be picked),
+    winner: winner of the game
+    loser: loser of the game
+    numPlayers: number of players currently playing
+    maxPlayers: maximum number of players 
+    maxRocksCanBePicked: maximum rocks that can be picked each turn
+    currentPlayer: current player who is picking up the rocks
+    nextPlayer: next player after the currentPlayer
+     */
+    
     public int numRocks;
-    boolean isPlaying;
     Player winner;
     Player loser;
     public int numPlayers;
     private int maxPlayers = 2;
-    int maxRockscanbepicked;
-    Random rand = new Random();
+    int maxRocksCanBePicked;
     Player currentPlayer;
     Player nextPlayer;
-    public Board(){
-        isPlaying = true;
+
+    public Board() {
     }
 
-    public void populate(){
+    public void displayBoard() {
+        //display both number of rocks available and number of rocks player can pick at each turn.
         System.out.println("There are " + numRocks + " available");
-        System.out.println("You can pick up at max " + maxRockscanbepicked + " rocks at the first turn");
+        System.out.println("You can pick up at max " + maxRocksCanBePicked + " rocks at the first turn");
 
 
     }
-
-    public int getNumrocks(){
+    //outputs number of rocks
+    public int getNumrocks() {
+        //return the number of rocks
         return numRocks;
     }
-    public void setNumrocks(){
-        numRocks = (int)(Math.random()*(50-10) + 10);
-        maxRockscanbepicked = numRocks/2;
+
+    public void setNumrocks() {
+        //sets a random value of rocks if the user opts out in imputting their own number.
+        numRocks = (int) (Math.random() * (50 - 10) + 10);
+        maxRocksCanBePicked = numRocks / 2;
 
     }
-    public void setRocks(int rocks){
+
+    public void setRocks(int rocks) {
+        //user can set their own number of rocks.
         numRocks = rocks;
-        maxRockscanbepicked = numRocks/2;
+        maxRocksCanBePicked = numRocks / 2;
     }
-    public void addPlayer(){
-        numPlayers+=1;
-        if (numPlayers> 2){
+
+    public void addPlayer() {
+        // adds the player to the lobby.
+        numPlayers += 1;
+        if (numPlayers > maxPlayers) {
+            //if more than 2 players join, then the lobby is overcrowded.
             System.out.println("Lobby Full!");
         }
     }
 
-    public int getNumplayers(){
+    public int getNumplayers() {
+        //returns the number of players currently playing.
         return numPlayers;
     }
-
-    public void pickupRocks(int rock){
-        if (rock > maxRockscanbepicked){
+    /* pickupRocks: board removes the rocks from the "pile"
+    
+     @param rock: number of rocks user wants the remove. Value inputted using scanner.
+    */
+    public void pickupRocks(int rock) {
+        
+        if (rock > maxRocksCanBePicked) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Too many rocks!");
-            System.out.print(getCurrentPlayer().getName()+ " How many rocks do you want to pick?:");
+            System.out.print(getCurrentPlayer().getName() + " How many rocks do you want to pick?:");
             int rockNum = scanner.nextInt();
             pickupRocks(rockNum);
 
-        }
-        else{
-            numRocks-=rock;
-            maxRockscanbepicked = numRocks/2;
-            if(numRocks == 1){
-                maxRockscanbepicked = 1;
+        } else {
+            numRocks -= rock;
+            maxRocksCanBePicked = numRocks / 2;
+            if (numRocks == 1) {
+                maxRocksCanBePicked = 1;
             }
 
         }
     }
-    public int countEligibleRocks(){
-        return maxRockscanbepicked;
+    //counts the number of rocks that the user can remove each turn.
+    public int countEligibleRocks() {
+        return maxRocksCanBePicked;
     }
-    public void setWinner(Player player){
+
+    //sets Winner. The person who does not take the last rock wins.
+    public void setWinner(Player player) {
         winner = player;
     }
-
-    public void setLoser(Player player){
+    //sets Loser. The person who takes the last rock loses.
+    public void setLoser(Player player) {
         loser = player;
     }
-    public void closeBoard(){
+    
+    //shuts down the game.
+    public void closeBoard() {
         System.out.println("Game Over");
-        isPlaying = false;
     }
 
-
-    public void setCurrentPlayer(Player p){
+    //switches the turns to the next player
+    //@param Player p: player who gets the turn
+    public void setCurrentPlayer(Player p) {
         currentPlayer = p;
 
     }
-    public void setCurrentPlayer(){
+    
+    //sets the current player
+    public void setCurrentPlayer() {
         Player tempPlayer = getNextPlayer();
         nextPlayer = currentPlayer;
         currentPlayer = tempPlayer;
 
     }
-
-    public Player getCurrentPlayer(){
+    
+    
+    //gets the current player
+    public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
-
-    public void setNextPlayer(Player p){
+    //sets Next player turn
+    //@param: Player p: player who is getting the next turn
+    public void setNextPlayer(Player p) {
         nextPlayer = p;
 
     }
-    public Player getNextPlayer(){
+    //returns the next Player
+    public Player getNextPlayer() {
         return nextPlayer;
     }
-
-    public String getWinner(){
+    
+    //gets the winner of the game
+    public String getWinner() {
         return winner.getName();
     }
-    public String getLoser(){
+    //gets the loser of the game.
+    public String getLoser() {
         return loser.getName();
     }
-
 
 
 }
